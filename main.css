@@ -1,6 +1,30 @@
-.cm-lkcampbell-indent-guides {
-    position: relative;
-    background-image: url(indent-guide.svg);
-    background-repeat: repeat-y;
-    width: 1px;
+.cm-ig {
+  border-left: 1px solid #DDD;
+  margin-left: -1px;
+  background-color: rgba(0,0,0,0.003);
+}
+.cm-ig-d0 {
+  border-left-color: #bbb;
+  background-color: rgba(0,0,0,0.06);
+}
+.cm-ig-d1 {
+  border-left-color: #bbb;
+  background-color: rgba(0,0,0,0.04);
+}
+.cm-ig-d2 {
+  border-left-color: #bbb;
+  background-color: rgba(0,0,0,0.02);
+}
+.cm-ig-d3 {
+  border-left-color: #bbb;
+  background-color: rgba(0,0,0,0.01);
+}
+.cm-ig-d4 {
+  background-color: rgba(0,0,0,0.008);
+}
+.cm-ig-d5 {
+  background-color: rgba(0,0,0,0.006);
+}
+.cm-ig-d6 {
+  background-color: rgba(0,0,0,0.004);
 }

@@ -27,7 +27,7 @@
 
 define(function (require, exports, module) {
     "use strict";
-    
+
     // --- Required modules ---
     var PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
         Menus               = brackets.getModule("command/Menus"),
@@ -37,46 +37,40 @@ define(function (require, exports, module) {
         CommandManager      = brackets.getModule("command/CommandManager"),
         DocumentManager     = brackets.getModule("document/DocumentManager"),
         ExtensionUtils      = brackets.getModule("utils/ExtensionUtils");
-    
+
     // --- Constants ---
     var COMMAND_NAME    = "Toggle Indent Guides",
         COMMAND_ID      = "lkcampbell.toggleIndentGuides";
-    
+
     // --- Local variables ---
     var _defPrefs   = { enabled: false },
         _prefs      = PreferencesManager.getPreferenceStorage(module, _defPrefs),
         _viewMenu   = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
-    
+
     // Overlay that assigns Indent Guides style to all indents in the document
     var _indentGuidesOverlay = {
         token: function (stream, state) {
-            var char        = "",
-                spaceUnits  = 0,
-                isTabStart  = false;
-            
-            char = stream.next();
-            
-            if (char === "\t") {
-                return "lkcampbell-indent-guides";
-            }
-            
-            if (char !== " ") {
+            var char = stream.next(),
+                column = stream.column(),
+                spaceUnits = Editor.getSpaceUnits(),
+                isTabStart,
+                klass;
+            switch (char) {
+            case "\t":
+                isTabStart = true;
+                break;
+            case " ":
+                isTabStart = (column % spaceUnits) ? false : true;
+                break;
+            default:
                 stream.skipToEnd();
-                return null;
+                return;
             }
-            
-            spaceUnits = Editor.getSpaceUnits();
-            isTabStart = (stream.column() % spaceUnits) ? false : true;
-            
-            if ((char === " ") && (isTabStart)) {
-                return "lkcampbell-indent-guides";
-            } else {
-                return null;
-            }
-        },
-        flattenSpans: false
+            klass = "ig ig-d" + Math.floor(column / spaceUnits);
+            return klass;
+        }
     };
-    
+
     // --- Event handlers ---
     function _updateOverlay() {
         var command     = CommandManager.get(COMMAND_ID),
@@ -94,7 +88,7 @@ define(function (require, exports, module) {
             codeMirror.refresh();
         }
     }
-    
+
     function _toggleIndentGuides() {
         var command = CommandManager.get(COMMAND_ID);
         
@@ -102,25 +96,25 @@ define(function (require, exports, module) {
         _prefs.setValue("enabled", command.getChecked());
         _updateOverlay();
     }
-    
+
     // --- Initialize Extension ---
     AppInit.appReady(function () {
         var isEnabled = _prefs.getValue("enabled");
-        
+
         // --- Register command ---
         CommandManager.register(COMMAND_NAME, COMMAND_ID, _toggleIndentGuides);
-        
+
         // --- Add to View menu ---
         if (_viewMenu) {
             _viewMenu.addMenuItem(COMMAND_ID);
         }
-        
+
         // Apply user preferences
         CommandManager.get(COMMAND_ID).setChecked(isEnabled);
-        
+
         // Add event listeners for updating the indent guides
         $(DocumentManager).on("currentDocumentChange", _updateOverlay);
-        
+
         // Load the indent guide CSS -- when done, update the overlay
         ExtensionUtils.loadStyleSheet(module, "main.css")
             .done(function () {

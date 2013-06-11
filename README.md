@@ -4,7 +4,7 @@ An extension for [Brackets](https://github.com/adobe/brackets/) to show indent g
 ### How to Install
 1. Select **Brackets > File > Extension Manager...**
 2. Click on **Install from URL...**
-3. Paste https://github.com/lkcampbell/brackets-indent-guides
+3. Paste https://github.com/wmertens/brackets-indent-guides
 into Extension URL field.
 4. Click on the **Install** button.
 

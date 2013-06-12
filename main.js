@@ -49,25 +49,34 @@ define(function (require, exports, module) {
 
     // Overlay that assigns Indent Guides style to all indents in the document
     var _indentGuidesOverlay = {
-        token: function (stream, state) {
-            var char = stream.next(),
+        token: function (stream) {
+            var char,
+                first = true,
                 column = stream.column(),
-                spaceUnits = Editor.getSpaceUnits(),
-                isTabStart,
-                klass;
-            switch (char) {
-            case "\t":
-                isTabStart = true;
-                break;
-            case " ":
-                isTabStart = (column % spaceUnits) ? false : true;
-                break;
-            default:
-                stream.skipToEnd();
-                return;
+                i = Editor.getSpaceUnits(),
+                depth = Math.floor(column / i);
+            // We start at a tab stop so we can count spaceUnits or until the next tab
+            while (i) {
+                char = stream.next();
+                switch (char) {
+                case "\t":
+                    i = 0;
+                    break;
+                case " ":
+                    i--;
+                    break;
+                default:
+                    if (first) {
+                        stream.skipToEnd();
+                        return null;
+                    }
+                    stream.backup(1);
+                    i = 0;
+                }
+                first = false;
             }
-            klass = "ig ig-d" + Math.floor(column / spaceUnits);
-            return klass;
+            
+            return "ig ig-d" + depth;
         }
     };
 

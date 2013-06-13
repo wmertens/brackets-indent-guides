@@ -48,13 +48,17 @@ define(function (require, exports, module) {
         _viewMenu   = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
 
     // Overlay that assigns Indent Guides style to all indents in the document
+    var depth, i;
     var _indentGuidesOverlay = {
         token: function (stream) {
             var char,
                 first = true,
                 column = stream.column(),
-                i = Editor.getSpaceUnits(),
-                depth = Math.floor(column / i);
+                klass;
+            if (stream.sol()) {
+                i = Editor.getSpaceUnits();
+                depth = 0;
+            }
             // We start at a tab stop so we can count spaceUnits or until the next tab
             while (i) {
                 char = stream.next();
@@ -75,8 +79,12 @@ define(function (require, exports, module) {
                 }
                 first = false;
             }
-            
-            return "ig ig-d" + depth;
+            klass = "ig ig-d" + depth;
+            if (i === 0) {
+                i = Editor.getSpaceUnits();
+                depth++;
+            }
+            return klass;
         }
     };
 

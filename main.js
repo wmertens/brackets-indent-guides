@@ -53,7 +53,6 @@ define(function (require, exports, module) {
         token: function (stream) {
             var char,
                 first = true,
-                column = stream.column(),
                 klass;
             if (stream.sol()) {
                 i = Editor.getSpaceUnits();
@@ -74,7 +73,7 @@ define(function (require, exports, module) {
                         stream.skipToEnd();
                         return null;
                     }
-                    stream.backup(1);
+                    stream.backUp(1);
                     i = 0;
                 }
                 first = false;
